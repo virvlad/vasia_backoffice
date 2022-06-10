@@ -1,1 +1,372 @@
+{include file="/standard/adelanta/top.html"}
 
+{literal}
+    <style>
+        .center-box {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .table_td {
+            padding: 7px;
+            border: 1px solid #777777;
+        }
+        .table_th {
+            padding: 7px;
+            border: 1px solid #777777;
+            color: #333333;
+        }
+        .cell_center {
+            text-align: center;
+        }
+        .a_dec_none {
+            text-decoration: none;
+        }
+
+    </style>
+{/literal}
+
+<div class="center-box">
+
+<br>
+<h1>Food&Drink menu editing page</h1><br>
+
+
+{if $toedit}
+
+    <h3>Edit subsection:</h3>
+
+    <form action="index.php" method="POST">
+        <table style="border:0px;">
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="hidden" name="id" value="{$toedit.id}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Name:</td>
+                <td><input type="text" name="name" style="width:500px;" value="{$toedit.name}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Main section:</td>
+                <td style="text-align: left; padding-left: 70px;">
+                    <br>
+                    {foreach item=row_section from=$sections}
+                        <input disabled type="radio" name="section_id" value="{$row_section.id}"
+                                {if $toedit.section==$row_section.id} checked {/if}> {$row_section.name} <br>
+                    {/foreach}
+                    <br>
+                </td>   
+            </tr>
+            <tr>
+                <td style="text-align:right; valign:top;">Description:</td>
+                <td><textarea name="descr" rows="10" style="width:700px;">{$toedit.descr}</textarea></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Add after:</td>
+                <td><!-- input type="text" name="sort" style="width:100px;" value="{$toedit.sort}" -->
+                    <select name="sort">
+                        <option value="{$toedit.section*100}" style="font-style:italic;"> &nbsp;>&nbsp;top of the list</option>
+                        {foreach item=row from=$subsections_current_section}
+                                <option value="{$row.sort}" {if $row.sort==$toedit.sort} selected {/if} > {$row.name}</option>
+                        {/foreach}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;<br><br>&nbsp;</td>
+                <td style="valign:bottom;"><input type="submit" name="edit_sub_sect" value="SAVE"></td>
+            </tr>
+        </table>
+    </form>
+
+    <br><br>
+
+
+    <h3>Choose <i>add</i>, <i>delete</i> or <i>edit</i> item:</h3>
+
+    <table style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th class="table_th cell_center"></th>
+                <th class="table_th">Name</th>
+                <th class="table_th">Description</th>
+                <th class="table_th">Price</th>
+                <th class="table_th">Vegan</th>
+                <th class="table_th">Picture</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach item=row_item from=$subsection_items}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?del_item_id={$row_item.id}" onClick="return confirm('Do you really want to delete it?')">[x]</a></td>
+                    <td class="table_td"><a href="?edit_item_id={$row_item.id}">{$row_item.name}</a></td>
+                    <td class="table_td"><small>{$row_item.descr|nl2br|noescape}</small></td>
+                    <td class="table_td cell_center">{$row_item.price}</td>
+                    <td class="table_td cell_center">{if $row_item.vegantype=='1'}<img src="http://img.vasiahotels.services/img/rs/v_checkbox_2.gif">{/if}</td>
+                    <td class="table_td cell_center">{if $row_item.pic}<img height="30px" src="http://img.vasiahotels.services/img/rs/{$row_item.pic}?rnd={$smarty.now}">{/if}</td>
+                </tr>
+            {/foreach}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?add_item_subsect={$row_item.subsection}">[+]</a></td>
+                    <td class="table_td"><a href="?add_item_subsect={$row_item.subsection}">Add new item</a></td>
+                    <td class="table_td"></td>
+                    <td class="table_td cell_center"></td>
+                    <td class="table_td cell_center"></td>
+                    <td class="table_td"></td>
+                </tr>
+        </tbody>
+    </table>
+
+    <br><br><br><br><br>
+
+{/if}
+
+
+{if $toedit_item}
+
+    <h3>Edit item:</h3>
+
+    <form enctype="multipart/form-data" action="index.php" method="POST">
+        <table style="border:0px;">
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="hidden" name="id" value="{$toedit_item.id}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Name:</td>
+                <td><input type="text" name="name" style="width:500px;" value="{$toedit_item.name}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right; valign:top;">Description:</td>
+                <td><textarea name="descr" rows="5" style="width:700px;">{$toedit_item.descr}</textarea></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Price:</td>
+                <td><input type="text" name="price" style="width:100px;" value="{$toedit_item.price}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><br>Vegan:<br><br></td>
+                <td><br>
+<!-- сюда мы вставим checkbox -->
+                    <input type="radio" name="vegantype" value="1" {if $toedit_item.vegantype=="1"} checked {/if}">Yes
+                    <input type="radio" name="vegantype" value="0" {if $toedit_item.vegantype=="0"} checked {/if}">No<br><br>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Picture:</td>
+                <td>{if $toedit_item.pic}<img height="70px" src="http://img.vasiahotels.services/img/rs/{$toedit_item.pic}?rnd={$smarty.now}"><br><br>{/if}
+                    <input type="file" name="pic">
+                </td>
+            </tr>
+            <tr>
+                <td><br>&nbsp;</td>
+                <td style="valign:bottom;"><br><br><input type="submit" name="edit_item" value="SAVE"></td>
+            </tr>
+        </table>
+    </form>
+
+    <br><br>
+
+
+    <h3>Choose <i>add</i>, <i>delete</i> or <i>edit</i> item:</h3>
+
+    <table style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th class="table_th cell_center"></th>
+                <th class="table_th">Name</th>
+                <th class="table_th">Description</th>
+                <th class="table_th">Price</th>
+                <th class="table_th">Vegantype</th>
+                <th class="table_th">Picture</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach item=row_item from=$subsection_items}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?del_item_id={$row_item.id}" onClick="return confirm('Do you really want to delete it?')">[x]</a></td>
+                    <td class="table_td"><a href="?edit_item_id={$row_item.id}">{$row_item.name}</a></td>
+                    <td class="table_td"><small>{$row_item.descr|nl2br|noescape}</small></td>
+                    <td class="table_td cell_center">{$row_item.price}</td>
+                    <td class="table_td cell_center">{if $row_item.vegantype=='1'}<img src="http://img.vasiahotels.services/img/rs/v_checkbox_2.gif">{/if}</td>
+                    <td class="table_td cell_center">{if $row_item.pic}<img height="30px" src="http://img.vasiahotels.services/img/rs/{$row_item.pic}?rnd={$smarty.now}">{/if}</td>
+                </tr>
+            {/foreach}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?add_item_subsect={$row_item.subsection}">[+]</a></td>
+                    <td class="table_td"><a href="?add_item_subsect={$row_item.subsection}">Add new item</a></td>
+                    <td class="table_td"></td>
+                    <td class="table_td cell_center"></td>
+                    <td class="table_td cell_center"></td>
+                    <td class="table_td"></td>
+                </tr>
+        </tbody>
+    </table>
+
+    <br><br><br><br><br>
+
+
+{/if}
+
+
+{if $add_item_subsect}
+
+    <h3>Add new item:</h3>
+
+    <form enctype="multipart/form-data" action="index.php" method="POST">
+        <table style="border:0px;">
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="hidden" name="subsection" value="{$add_item_subsect}"></td>
+            </tr><tr>
+                <td style="text-align:right;">Name:</td>
+                <td><input type="text" name="name" style="width:500px;" value=""></td>
+            </tr>
+            <tr>
+                <td style="text-align:right; valign:top;">Description:</td>
+                <td><textarea name="descr" rows="5" style="width:700px;" value=""></textarea></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Price:</td>
+                <td><input type="text" name="price" style="width:100px;" value=""></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><br>Vegan:<br></td>
+                <td><br>
+                    <input type="checkbox" name="vegantype" value="1"><br>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Picture:</td>
+                <td><input type="file" name="pic"></td>
+            </tr>
+            <tr>
+                <td>&nbsp;<br><br>&nbsp;</td>
+                <td style="valign:bottom;"><input type="submit" name="add_new_item" value="ADD"></td>
+            </tr>
+        </table>
+    </form>
+
+    <br><br>
+
+
+    <h3>Choose <i>add</i>, <i>delete</i> or <i>edit</i> item:</h3>
+
+    <table style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th class="table_th cell_center"></th>
+                <th class="table_th">Name</th>
+                <th class="table_th">Description</th>
+                <th class="table_th">Price</th>
+                <th class="table_th">Vegantype</th>
+                <th class="table_th">Picture</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach item=row_item from=$subsection_items}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?del_item_id={$row_item.id}" onClick="return confirm('Do you really want to delete it?')">[x]</a></td>
+                    <td class="table_td"><a href="?edit_item_id={$row_item.id}">{$row_item.name}</a></td>
+                    <td class="table_td"><small>{$row_item.descr|nl2br|noescape}</small></td>
+                    <td class="table_td cell_center">{$row_item.price}</td>
+                    <td class="table_td cell_center">{if $row_item.vegantype=='1'}<img src="http://img.vasiahotels.services/img/rs/v_checkbox_2.gif">{/if}</td>
+                    <td class="table_td">{if $row_item.pic}<img height="30px" src="http://img.vasiahotels.services/img/rs/{$row_item.pic}?rnd={$smarty.now}">{/if}</td>
+                </tr>
+            {/foreach}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?add_item_subsect={$row_item.subsection}">[+]</a></td>
+                    <td class="table_td"><a href="?add_item_subsect={$row_item.subsection}">Add new item</a></td>
+                    <td class="table_td"></td>
+                    <td class="table_td cell_center"></td>
+                    <td class="table_td cell_center"></td>
+                    <td class="table_td"></td>
+                </tr>
+        </tbody>
+    </table>
+
+    <br><br><br><br><br>
+
+{/if}
+
+
+{if $new_sort}
+
+    <h3>Add new subsection:</h3><br>
+
+        <form action="index.php" method="POST">
+            <table style="border:0px;">
+                <tr>
+                    <td style="text-align:right;">Name:</td>
+                    <td><input type="text" name="name" style="width:500px;" value=""></td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;">Main section:</td>
+                    <td style="text-align: left; padding-left: 70px;">
+                        <br>
+                        {foreach item=row_section from=$sections name=blabla}
+                            <input disabled type="radio" name="section_id" value="{$row_section.id}"
+                                {if $smarty.foreach.blabla.first} checked {/if} > {$row_section.name} <br>
+                        {/foreach}
+                        <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right; valign:top;">Description:</td>
+                    <td><textarea name="descr" rows="10" style="width:700px;" value=""></textarea></td>
+                </tr>
+                <tr>
+                    <td>&nbsp</td>
+                    <td><input type="hidden" name="sort" value="{$new_sort}"></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;<br><br>&nbsp;</td>
+                    <td style="valign:bottom;"><input type="submit" name="add_sub_sect" value="ADD"></td>
+                </tr>
+            </table>
+        </form>
+
+{/if}
+
+
+<br>
+
+<h2>Choose <i>add</i>, <i>delete</i> or <i>edit</i> subsection:</h2><br><br>
+
+{foreach item=row_section from=$sections}
+
+<h3>{$row_section.name}</h3>
+
+<table style="border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th class="table_th cell_center">Add<br><a class="a_dec_none" href="?add_after_sort={$row_section.id*100}">[+]</a></th>
+            <th class="table_th cell_center">Del</th>
+            <th class="table_th">Name</th>
+            <th class="table_th">Description</th>
+            <!-- th class="table_th">Sort</th  -->
+        </tr>
+    </thead>
+    <tbody>
+        {foreach item=row from=$subsections}
+            {if $row.section == $row_section.id}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?add_after_sort={$row.sort}">[+]</a></td>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?del_id={$row.id}" onClick="return confirm('Do you really want to delete it?')">[x]</a></td>
+                    <td class="table_td"><a href="?edit_id={$row.id}">{$row.name}</a></td>
+                    <td class="table_td"><small>{$row.descr|nl2br|noescape}</small></td>
+                    <!-- td class="table_td">{$row.sort}</td  -->
+                </tr>
+            {/if}
+        {/foreach}
+    </tbody>
+</table>
+    <br><br>
+
+{/foreach }
+
+    <br><br><br><br><br>
+
+</div>
+
+
+{include file="/standard/adelanta/end.html"}
