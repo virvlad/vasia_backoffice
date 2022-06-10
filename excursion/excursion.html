@@ -1,0 +1,194 @@
+{include file="/standard/adelanta/top.html"}
+
+{literal}
+    <style>
+        .center-box {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .table_td {
+            padding: 7px;
+            border: 1px solid #777777;
+        }
+        .table_th {
+            padding: 7px;
+            border: 1px solid #777777;
+            color: #333333;
+        }
+        .cell_center {
+            text-align: center;
+        }
+        .a_dec_none {
+            text-decoration: none;
+        }
+    </style>
+{/literal}
+
+<div class="center-box">
+
+    <br>
+    <h1>Excursions <i><small>editing page</small></i></h1><br>
+
+{if $new_sort}
+
+    <h3>Add new excursion:</h3>
+
+    <form enctype="multipart/form-data" action="excursion.php" method="POST">
+        <table style="border:0px;">
+            <tr>
+                <td style="text-align:right;">Name:</td>
+                <td style="padding:3px;"><input type="text" name="name" style="width:500px;" value=""></td>
+            </tr>
+            <tr>
+                <td style="text-align:right; valign:top;">Anons:</td>
+                <td style="padding:3px;"><textarea name="anons" rows="5" style="width:700px;" value=""></textarea></td>
+            </tr>
+            <tr>
+                <td style="text-align:right; valign:top;">Description:</td>
+                <td style="padding:3px;"><textarea name="descr" rows="5" style="width:700px;" value=""></textarea></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Price:</td>
+                <td style="padding:3px;"><input type="text" name="price" style="width:100px;" value=""></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Duration:</td>
+                <td style="padding:3px;"><input type="text" name="dur" style="width:200px;" value=""></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Start:</td>
+                <td style="padding:3px;"><input type="text" name="start" style="width:300px;" value=""></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Days:</td>
+                <td style="padding:3px;"><input type="text" name="dates" style="width:200px;" value=""></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Img:</td>
+                <td style="padding:3px;"><input type="file" name="img"></td>
+            </tr>
+            <tr>
+                <td>Sort Checking:</td>
+                <td style="padding:3px;"><input type="text" name="sort" value="{$new_sort}"></td>
+            </tr>
+            <tr>
+                <td>&nbsp;<br><br>&nbsp;</td>
+                <td style="padding:3px; valign:bottom;"><input type="submit" name="add_new_ex" value="ADD"></td>
+            </tr>
+        </table>
+    </form>
+
+    <br><br>
+
+{/if}
+
+
+{if $toedit}
+
+    <h3>Edit excursion:</h3>
+
+    <form enctype="multipart/form-data" action="excursion.php" method="POST">
+        <table style="border:0px;">
+            <tr>
+                <td></td>
+                <td><input type="hidden" name="id" value="{$toedit.id}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Name:</td>
+                <td><input type="text" name="name" style="width:500px;" value="{$toedit.name}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right; valign:top;">Anons:</td>
+                <td><textarea name="anons" rows="5" style="width:700px;" value="{$toedit.anons}">{$toedit.anons}</textarea></td>
+            </tr>
+            <tr>
+                <td style="text-align:right; valign:top;">Description:</td>
+                <td><textarea name="descr" rows="5" style="width:700px;" value="{$toedit.descr}">{$toedit.descr}</textarea></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Price:</td>
+                <td><input type="text" name="price" style="width:100px;" value="{$toedit.price}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Duration:</td>
+                <td><input type="text" name="dur" style="width:200px;" value="{$toedit.dur}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Start:</td>
+                <td><input type="text" name="start" style="width:300px;" value="{$toedit.start}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Days:</td>
+                <td><input type="text" name="dates" style="width:200px;" value="{$toedit.dates}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Img:</td>
+                <td>{if $toedit.img}<br><img height="70px" src="http://img.vasiahotels.services{$toedit.img}?rnd={$smarty.now}"><br><br>{/if}
+                    <input type="file" name="img"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><br>Add after:</td>
+                <td><br>
+                    <select name="sort">
+                        <option value="0" style="font-style:italic;"> &nbsp;>&nbsp;top of the list</option>
+                        {foreach item=row from=$excursion}
+                            <option value="{$row.sort}" {if $row.sort==$toedit.sort} selected {/if} > {$row.name}</option>
+                        {/foreach}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;<br><br>&nbsp;</td>
+                <td style="valign:bottom;"><input type="submit" name="edit_excursion" value="SAVE"></td>
+            </tr>
+        </table>
+    </form>
+
+    <br><br>
+
+{/if}
+
+    <h2>Choose <i>add</i>, <i>delete</i> or <i>edit</i> excursion:</h2><br><br>
+
+    <table style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th class="table_th cell_center">Add<br><a class="a_dec_none" href="?add_after_sort=0">[+]</a></th>
+                <th class="table_th cell_center">Del</th>
+                <th class="table_th">Name</th>
+                <th class="table_th">Anons</th>
+                <!-- th class="table_th">Description</th      -->
+                <th class="table_th">Price</th>
+                <th class="table_th">Duration</th>
+                <th class="table_th">Start</th>
+                <th class="table_th">Days</th>
+                <th class="table_th">Img</th>
+                <!-- th class="table_th">Sort</th         -->
+            </tr>
+        </thead>
+        <tbody>
+            {foreach item=row from=$excursion}
+                <tr>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?add_after_sort={$row.sort}">[+]</a></td>
+                    <td class="table_td cell_center"><a class="a_dec_none" href="?del_id={$row.id}" onClick="return confirm('Do you really want to delete it?')">[x]</a></td>
+                    <td class="table_td"><a href="?edit_id={$row.id}">{$row.name}</a></td>
+                    <td class="table_td"><small>{$row.anons|nl2br|noescape}</small></td>
+                    <!-- td class="table_td"><small>{$row.descr|nl2br|noescape}</small></td   -->
+                    <td class="table_td cell_center">{$row.price}</td>
+                    <td class="table_td"><small>{$row.dur|nl2br|noescape}</small></td>
+                    <td class="table_td"><small>{$row.start|nl2br|noescape}</small></td>
+                    <td class="table_td cell_center">{$row.dates}</td>
+                    <td class="table_td cell_center" style="height:30px;">{if $row.img}<img height="30px" src="http://img.vasiahotels.services{$row.img}?rnd={$smarty.now}">{/if}</td>
+                    <!-- td class="table_td cell_center">{$row.sort}</td   -->
+                </tr>
+            {/foreach}
+        </tbody>
+    </table>
+
+
+    <br><br><br><br><br>
+
+</div>
+
+
+{include file="/standard/adelanta/end.html"}
