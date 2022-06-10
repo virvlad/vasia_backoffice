@@ -8,5 +8,14 @@ and use it in your daily work
 
 There are two samples - for excursion and taxi (internal only) services
 
+Stack: PHP, MySQL, Smarty, html/css
+
 You can see excursions here:
 http://vasiahotels.services/excursions/
+
+## Licence
+Free
+
+#### Contacts
+Vladimir Gusev, 
+mailto: silufol@gmail.com
