@@ -1,0 +1,161 @@
+{include file="/standard/adelanta/top.html"}
+
+{literal}
+    <style>
+        .center-box {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .table_td {
+            padding: 7px;
+            border: 1px solid #777777;
+        }
+        .table_th {
+            padding: 7px;
+            border: 1px solid #777777;
+            color: #333333;
+        }
+        .cell_center {
+            text-align: center;
+        }
+        .a_dec_none {
+            text-decoration: none;
+        }
+    </style>
+{/literal}
+
+
+<div class="center-box">
+
+    <br><h2>Vasia hotels - Taxi prices</h2><br>
+
+{if $new_sort}
+
+<h3>Add new destination:</h3>
+
+<form action="taxi.php" method="POST">
+    <table style="border:0px;">
+        <tr>
+            <td style="text-align:right;">Add to hotel:</td>
+            <td><input type="hidden" name="hotel_id" value="{$hotel_id_row.id}"> {$hotel_id_row.name} </td>
+        </tr>
+        <tr>
+            <td style="text-align:right;">Destination:</td>
+            <td><input type="text" name="name" style="width:700px;"></td>
+        </tr>
+        <tr>
+            <td style="text-align:right;">Price usual:</td>
+            <td><input type="text" name="price" style="width:70px;"><b style="font-size:120%;">&nbsp;&euro;</b></td>
+        </tr>
+        <tr>
+            <td style="text-align:right;">Price minivan:</td>
+            <td><input type="text" name="price8" style="width:70px;"><b style="font-size:120%;">&nbsp;&euro;</b></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td style="padding:3px;"><input type="hidden" name="sort" value="{$new_sort}"></td>
+        </tr>
+        <tr>
+            <td>&nbsp;<br><br>&nbsp;</td>
+            <td style="vertical-align:bottom;"><input type="submit" name="add_dest" value="SAVE"></td>
+        </tr>
+    </table>
+</form>
+
+<br><br>    
+
+{/if}
+
+
+{if $toedit}
+
+    <h3>Edit destination:</h3>
+
+    <form action="taxi.php" method="POST">
+        <table style="border:0px;">
+            <tr>
+                <td></td>
+                <td><input type="hidden" name="id" value="{$toedit.id}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Add to hotel:</td>
+                <td><input type="hidden" name="hotel_id" value="{$hotel_id_row.id}"> {$hotel_id_row.name} </td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Destination:</td>
+                <td><input type="text" name="name" style="width:700px;" value="{$toedit.name}"></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Price usual:</td>
+                <td><input type="text" name="price" style="width:70px;" value="{$toedit.price}"><b style="font-size:120%;">&nbsp;&euro;</b></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;">Price minivan:</td>
+                <td><input type="text" name="price8" style="width:70px;" value="{$toedit.price8}"><b style="font-size:120%;" value="{$toedit.price8}">&nbsp;&euro;</b></td>
+            </tr>
+            <tr>
+                <td style="text-align:right;"><br>Add after:</td>
+                <td><br>
+                    <select name="sort">
+                        <option value="0" style="font-style:italic;"> &nbsp;>&nbsp;top of the list</option>
+                        {foreach item=dest from=$destinations}
+                            {if $dest.hotel==$hotel_id_row.id}
+                                    <option value="{$dest.sort}" {if $dest.sort==$toedit.sort} selected {/if} > {$dest.name}</option>
+                            {/if}
+                        {/foreach}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;<br><br>&nbsp;</td>
+                <td style="vertical-align:bottom;"><input type="submit" name="edit_dest" value="SAVE"></td>
+            </tr>
+        </table>
+    </form>
+    
+    <br><br>    
+    
+{/if}
+    
+
+    <h3>Choose hotel and <i>add</i>, <i>delete</i> or <i>edit</i> taxi transfer:</h3><br>
+
+    <select onchange="window.location.href='?hotel_id=' + this.value;">
+        {foreach item=hotel from=$hotels}
+                <option value="{$hotel.id}" {if ($hotel.id==$hotel_id)} selected {/if} > {$hotel.name} </option>
+        {/foreach}
+    </select>
+    
+    <br><br>
+
+    <table border=1 cellpadding=5 cellspacing=0 style="border:1px solid grey;">
+        <thead>
+            <tr>
+                <th class="table_th cell_center">Add<br><a class="a_dec_none" href="?hotel_id={$hotel_id}&add_after_sort=0">[+]</a></th>
+                <th class="table_th cell_center">Del</th>
+                <th class="table_th">Name</th>
+                <th class="table_th">Price <br> usual</th>
+                <th class="table_th">Price <br> minivan</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach item=dest from=$destinations}
+                {if $dest.hotel==$hotel_id}
+                    <tr>
+                        <td class="table_td cell_center"><a class="a_dec_none" href="?hotel_id={$hotel_id}&add_after_sort={$dest.sort}">[+]</a></td>
+                        <td class="table_td cell_center"><a class="a_dec_none" href="?del_id={$dest.id}" onClick="return confirm('Do you really want to delete it?')">[x]</a></td>
+                        <td style="padding: 5px 50px 5px 20px;"><a href="?edit_id={$dest.id}"><b>{$dest.name}</b></a></td>
+                        <td class="table_td cell_center"><b>{$dest.price}</b> &euro;</td>
+                        <td class="table_td cell_center"><b>{$dest.price8}</b> &euro;</td>
+                    </tr>
+                {/if}
+            {/foreach}
+        </tbody>
+    </table>
+
+    
+    <br><br><br><br><br>
+
+</div>
+
+{include file="/standard/adelanta/end.html"}
